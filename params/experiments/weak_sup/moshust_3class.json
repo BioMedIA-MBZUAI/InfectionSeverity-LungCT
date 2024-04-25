@@ -1,0 +1,185 @@
+{
+    "params": {
+        "general": {
+            "id": "reg_prop_3Ddensenet121_moshust_3class",
+            "description": "MosMed and HUST datasets (3-Classes) using our proposed method with a 3D-DenseNet-121 backbone.",
+            "type": "vision",
+            "gpu": {
+                "ngpus": 1,
+                "gpu_id": 0
+            },
+            "experiment": "region_proposal"
+        },
+        "dataset": {
+            "class": "mos_hust",
+            "path": "/home/ibrahimalmakky/Documents/Datasets/COVID-19/",
+            "split_file": "split_mosmed_hust_nosuspect_80_20.json",
+            "cache_folder_name": "MosHUST",
+            "num_workers": 32,
+            "img_size": [
+                64,
+                128,
+                128
+            ],
+            "depth": true,
+            "batch_size": 16,
+            "mode": "3-Class",
+            "transform": {
+                "RandomAffine": {
+                    "scales": [
+                        0.9,
+                        1.1
+                    ]
+                },
+                "RandomFlip": {
+                    "axes": [
+                        "LR"
+                    ],
+                    "prob": 0.5
+                }
+            }
+        },
+        "model": {
+            "class": "3DCNN",
+            "num_channels": 1,
+            "conv_channels": [
+                1,
+                32,
+                64
+            ],
+            "kernels": [
+                [
+                    2,
+                    2,
+                    2
+                ],
+                [
+                    1,
+                    1,
+                    1
+                ]
+            ],
+            "fcn": [
+                2048,
+                512,
+                128
+            ],
+            "stride": [
+                1,
+                2,
+                2
+            ],
+            "pooling": [
+                2,
+                2,
+                2
+            ],
+            "dropout": 0
+        },
+        "region_proposal": {
+            "cuboid_size": [
+                8,
+                16,
+                16
+            ],
+            "num_cuboids": 64,
+            "model": {
+                "class": "DenseNet",
+                "model_depth": 121,
+                "num_channels": 1,
+                "fcn": [
+                    1024
+                ]
+            },
+            "lr": 0.001,
+            "criterion": {
+                "class": "BCE"
+            },
+            "optimizer": {
+                "class": "ADAM",
+                "beta1": 0.9
+            },
+            "scheduler": {
+                "class": "ReduceLROnPlateau",
+                "mode": "min",
+                "factor": 0.1,
+                "patience": 25,
+                "min_lr": 0.000001
+            },
+            "factors": {
+                "correct": 1,
+                "wrong": 0,
+                "increase_conf": 1.1,
+                "decrease_conf": 0.5,
+                "temperature": 0.01
+            },
+            "aggregation": {
+                "approach": "mlp",
+                "params": {
+                    "layers": [
+                        -1,
+                        512,
+                        128,
+                        -1
+                    ],
+                    "dropout": null,
+                    "activations": "ReLU",
+                    "out_activation": "None",
+                    "batch_norm": true,
+                    "prox_effect_epoch": 10,
+                    "pos_approach": "forward_pos_enc_vec_with_prop_feat",
+                    "lr": 0.001,
+                    "criterion": {
+                        "class": "CE",
+                        "weights": [
+                            1.28414097,
+                            0.53048226,
+                            2.9744898
+                        ]
+                    },
+                    "optimizer": {
+                        "class": "ADAM",
+                        "beta1": 0.9
+                    },
+                    "scheduler": {
+                        "class": "ReduceLROnPlateau",
+                        "mode": "min",
+                        "factor": 0.1,
+                        "patience": 25,
+                        "min_lr": 0.000001
+                    }
+                }
+            }
+        },
+        "training": {
+            "shuffle": true,
+            "epochs": 10000,
+            "lr": 0.001,
+            "criterion": {
+                "class": "CE"
+            },
+            "optimizer": {
+                "class": "ADAM",
+                "beta1": 0.9
+            },
+            "scheduler": {
+                "class": "ReduceLROnPlateau",
+                "mode": "min",
+                "factor": 0.1,
+                "patience": 25,
+                "min_lr": 0.000001
+            },
+            "transforms": {},
+            "profile": true,
+            "sampler": {},
+            "termination": {
+                "f1": 200,
+                "val_acc": 200
+            }
+        },
+        "validation": {
+            "frequency": 1
+        },
+        "testing": {}
+    }
+}

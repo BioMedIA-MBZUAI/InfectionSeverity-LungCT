@@ -1,0 +1,81 @@
+{
+    "params": {
+        "general": {
+            "id": "3Ddensenet121_mosmed",
+            "description": "MosMed dataset using DenseNet-121",
+            "type": "vision",
+            "gpu": {
+                "ngpus": 1,
+                "gpu_id": 0
+            },
+            "experiment": "infection_classification"
+        },
+        "dataset": {
+            "class": "mos_hust",
+            "path": "/nfs/projects/mbzuai/BioMedIA/COVID-19",
+            "split_file": "split_mosmed_80_20.json",
+            "cache_folder_name": "MosMed",
+            "num_workers": 6,
+            "img_size": [
+                64,
+                128,
+                128
+            ],
+            "depth": true,
+            "batch_size": 8,
+            "mode": "3-Class",
+            "transform": {
+                "RandomAffine": {
+                    "scales": [
+                        0.9,
+                        1.1
+                    ]
+                }
+            }
+        },
+        "model": {
+            "class": "DenseNet",
+            "num_channels": 1,
+            "model_depth": 121
+        },
+        "training": {
+            "shuffle": true,
+            "epochs": 400,
+            "lr": 0.0001,
+            "criterion": {
+                "class": "CE",
+                "weights": [
+                    1.28414097,
+                    0.53048226,
+                    2.9744898
+                ]
+            },
+            "optimizer": {
+                "class": "ADAM",
+                "beta1": 0.9,
+                "beta2": 0.99
+            },
+            "scheduler": {
+                "class": "None",
+                "milestones": [
+                    7,
+                    100,
+                    1000
+                ],
+                "gamma": 0.001,
+                "last_epoch": -1
+            },
+            "transforms": {},
+            "profile": true,
+            "sampler": {},
+            "termination": {
+                "validation": 400,
+                "f1": 400
+            }
+        },
+        "validation": {
+            "frequency": 1
+        },
+        "testing": {}
+    }
+}

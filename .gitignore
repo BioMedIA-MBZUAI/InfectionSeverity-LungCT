@@ -1,0 +1,12 @@
+__pycache__/
+runs/*
+runs_archive/*
+logging/*
+cache/*
+trials/*
+params/dev/
+params/test/
+params/runs
+.vscode/*
+slurm_out/*
+temp/*
